@@ -1,7 +1,11 @@
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import Milestone from "./Milestone";
+import MilestoneStyleProps from "./Milestone";
+import DEFAULT_MILESTONE_STYLE from "./Milestone";
 import ProgressBar from "./ProgressBar";
+import ProgressBarStyleProps from "./ProgressBar";
+import DEFAULT_PROGRESS_BAR_STYLE from "./ProgressBar";
 import ProgressText from "./ProgressText";
 
 interface Progress {
@@ -12,13 +16,18 @@ interface Progress {
 interface MilestoneProgressBarProps {
   totalMilestones: number;
   progress: Progress[];
+  milestoneStyleProps?: MilestoneStyleProps;
+  progressBarStyleProps?: ProgressBarStyleProps;
+  progressTextColor?: string;
+  containerBackgroundcolor?: string;
 }
 
 const progressBar = (
   completed: number,
   total: number,
   index: number,
-  nextStepStarted: boolean
+  nextStepStarted: boolean,
+  progressBarStyleProps: ProgressBarStyleProps,
 ): React.ReactElement => {
   let completePercentage = (completed * 100) / total;
   let completePercentageString = `${completePercentage}%`;
@@ -36,6 +45,7 @@ const progressBar = (
       type={progressBarStyle}
       key={`0-${index}`}
       percentage={completePercentageString}
+      styleProps={progressBarStyleProps}
     />
   );
 };
@@ -43,7 +53,12 @@ const progressBar = (
 const generateProgressBar = (
   args: MilestoneProgressBarProps
 ): React.ReactElement[] => {
-  const { totalMilestones, progress } = args;
+  const {
+    totalMilestones,
+    progress,
+    milestoneStyleProps = DEFAULT_MILESTONE_STYLE,
+    progressBarStyleProps = DEFAULT_PROGRESS_BAR_STYLE
+   } = args;
   return progress.map((step, index) => {
     var nextStepStarted = true;
     if (index === totalMilestones - 1 || progress[index + 1].completed === 0) {
@@ -54,12 +69,13 @@ const generateProgressBar = (
         style={{ flex: 1, flexDirection: "row" }}
         key={`ProgressBar${index}`}
       >
-        {progressBar(step.completed, step.total, index, nextStepStarted)}
+        {progressBar(step.completed, step.total, index, nextStepStarted, progressBarStyleProps)}
         {index === totalMilestones - 1 ? (
           <></>
         ) : (
           <Milestone
             status={step.completed == step.total ? "complete" : "incomplete"}
+            styleProps={milestoneStyleProps}
           />
         )}
       </View>
@@ -70,20 +86,20 @@ const generateProgressBar = (
 function MilestoneProgressBar(
   props: MilestoneProgressBarProps
 ): React.ReactElement {
-  const { totalMilestones, progress } = props;
+  const { totalMilestones, progress, progressTextColor, containerBackgroundcolor } = props;
   return (
-    <View style={styles.tripProgressBarContainer}>
-      <View style={styles.progressBarContainer}>
+    <View style={styles().tripProgressBarContainer}>
+      <View style={styles(containerBackgroundcolor).progressBarContainer}>
         {generateProgressBar(props)}
       </View>
-      <ProgressText totalMilestones={totalMilestones} progress={progress} />
+      <ProgressText totalMilestones={totalMilestones} progress={progress} textColor={progressTextColor} />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = (progressBarContainerBackgroundColor: string = "#EDEDEF") => StyleSheet.create({
   progressBarContainer: {
-    backgroundColor: "#EDEDEF",
+    backgroundColor: {progressBarContainerBackgroundColor},
     height: 15,
     flexDirection: "row",
     borderRadius: 10.5,
