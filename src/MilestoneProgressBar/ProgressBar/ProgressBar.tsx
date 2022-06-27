@@ -1,53 +1,68 @@
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
 
-interface ProgressBarProps {
-  type: string;
-  percentage: string;
+export interface ProgressBarStyleProps {
+  defaultBackgroundColor: string;
+  leftCurvedProgressBar: string;
+  flatProgressBar: string;
+  rightCurvedProgressBar: string;
+  blankProgressBar: string;
 }
 
-const getStyleFromType = (type: string): object => {
-  if (type === "flat") return styles.flatProgressBar;
-  else if (type === "leftCurved") return styles.leftCurvedProgressBar;
-  else if (type === "rightCurved") return styles.rightCurvedProgressBar;
-  else if (type === "default") return styles.defaultProgressBar;
-  return styles.blankProgressBar;
+interface ProgressBarProps {
+  type: string;
+  key: string;
+  percentage: string;
+  styleProps?: ProgressBarStyleProps;
+}
+
+export const DEFAULT_PROGRESS_BAR_STYLE = {
+  defaultBackgroundColor: "#B5B5B6",
+  leftCurvedProgressBar: "#B5B5B6",
+  flatProgressBar: "#B5B5B6",
+  rightCurvedProgressBar: "#B5B5B6",
+  blankProgressBar: "#EDEDEF",
+}
+
+const getStyleFromType = (type: string, styleProps: ProgressBarStyleProps): object => {
+  if (type === "flat") return styles(styleProps.flatProgressBar).flatProgressBar;
+  else if (type === "leftCurved") return styles(styleProps.leftCurvedProgressBar).leftCurvedProgressBar;
+  else if (type === "rightCurved") return styles(styleProps.rightCurvedProgressBar).rightCurvedProgressBar;
+  else if (type === "default") return styles(styleProps.defaultBackgroundColor).defaultProgressBar;
+  return styles(styleProps.blankProgressBar).blankProgressBar;
 };
 
-function ProgressBar(props: ProgressBarProps): React.ReactElement {
-  const { type } = props;
+export function ProgressBar({type, percentage, styleProps = DEFAULT_PROGRESS_BAR_STYLE}: ProgressBarProps): React.ReactElement {
   return (
-    <View style={[getStyleFromType(type), { width: props.percentage }]}></View>
+    <View style={[getStyleFromType(type, styleProps), { width: percentage }]}></View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = (backgroundColor: string) => StyleSheet.create({
   defaultProgressBar: {
-    backgroundColor: "#B5B5B6",
+    backgroundColor: {backgroundColor},
     height: 15,
     borderRadius: 10.5,
   },
   leftCurvedProgressBar: {
-    backgroundColor: "#B5B5B6",
+    backgroundColor: {backgroundColor},
     height: 15,
     borderTopLeftRadius: 10.5,
     borderBottomLeftRadius: 10.5,
   },
   flatProgressBar: {
-    backgroundColor: "#B5B5B6",
+    backgroundColor: {backgroundColor},
     height: 15,
   },
   rightCurvedProgressBar: {
-    backgroundColor: "#B5B5B6",
+    backgroundColor: {backgroundColor},
     height: 15,
     borderTopRightRadius: 10.5,
     borderBottomRightRadius: 10.5,
   },
   blankProgressBar: {
-    backgroundColor: "#EDEDEF",
+    backgroundColor: {backgroundColor},
     height: 15,
     borderRadius: 10.5,
   },
 });
-
-export default ProgressBar;

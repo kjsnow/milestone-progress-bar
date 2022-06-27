@@ -9,6 +9,7 @@ interface Progress {
 interface ProgressTextProps {
   totalMilestones: number;
   progress: Progress[];
+  textColor?: string;
 }
 
 const getTextFromProgress = (args: ProgressTextProps): string => {
@@ -21,15 +22,15 @@ const getTextFromProgress = (args: ProgressTextProps): string => {
 
 function ProgressText(props: ProgressTextProps): React.ReactElement {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>{getTextFromProgress(props)}</Text>
+    <View style={styles(props.textColor).container}>
+      <Text style={styles(props.textColor).text}>{getTextFromProgress(props)}</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = (textColor: string = "#B5B5B6") => StyleSheet.create({
   text: {
-    color: "#B5B5B6",
+    color: {textColor},
     fontFamily: "Celias-Bold",
     fontSize: 12,
     lineHeight: 15,
